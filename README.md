@@ -1,5 +1,6 @@
 # Tserver
 
+Ubuntu 20.04<br>
 python3 3.8.5<br>
 OpenSSH<br>
 pip 20.0.2<br>
