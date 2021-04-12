@@ -13,8 +13,8 @@ git 2.25.1<br>
 
 <br>
 혹여나 import 경로가 맞지 않을 시<br>
-export PYTHONPATH="${PYTHONPATH}:/home/~"<br>
-app.py의 경로까지 입력<br>
+export PYTHONPATH="${PYTHONPATH}:/home/~/"<br>
+app.py 폴더의 경로까지 입력<br>
 <br>
 
 app.py 경로 까지 이동 후 다음 행동<br>
