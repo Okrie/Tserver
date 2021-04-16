@@ -1,10 +1,8 @@
 from flask import Flask, render_template, request
-import os, sys
+import os, sys, json
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-#/home/okrie/var/www/testpy
-from module import connectDB
-
+from module import userLoginCheck
 
 app = Flask(__name__)
 
@@ -12,50 +10,33 @@ app = Flask(__name__)
 def hello_world():
     return 'Hello World!'
 
-@app.route('/send', methods=['GET', 'POST'])
-def sendpostMSG():
-    if request.method == 'GET':
-        return render_template('post.html')
-    elif request.method == 'POST':
-        name = 'uid'
-        nameValue = 'stage'
-
-        dictdata = {'uid':int(request.form[name]),'stage':int(request.form[nameValue])}
-
-        dbdata = selectAll()
-        ret = next((item for item in dbdata if item[name] == int(request.form[name])), None)
-
-
-        if ret[nameValue] == int(request.form[nameValue]):
-            isOk = True
-        else:
-            isOk = False
-
-        return render_template('default.html', result = isOk)
-
-
-def selectAll():    #db 전부 검색
-    db_class = connectDB.DataBase()
-    sql = "SELECT * FROM users"
-    row = db_class.executeAll(sql)
-    return row
-
-
-def select(name, uid):  #검색 조건
-    db_class = connectDB.DataBase()
-    sql = "SELECT * FROM users WHERE " + name + "=" + uid
-    row = db_class.executeAll(sql)
-    return row
-
-
-def insert(uid):   #아직 작성중 0409
-    db_class = connectDB.DataBase()
-    sql = "INSERT INTO users VALUES " + uid + ""
-    db_class.excute(sql)
-    db_class.commit()
-    return True
+@app.route('/ULManager', methods=['POST'])
+def userloginCheck():
+    userData = request.get_json()
+    if userLoginCheck.userLogin(userData):
+        return {
+            'status':'OK'
+            }
+    else:
+        #userLoginCheck.registerNewUID()
+        return {
+            'status':'No'
+            }
 
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+# api
+# 1. 클라의 요청하는 데이터는 한곳에서 만든다
+# 2. 클라가 요청해야하는 필수 Data 정의 하기
+# 3. 1번에서 API에 맞게 분기해서 처리하기
+# 4. 분기해서 처리된곳에서 리턴하기
+
+#비교는 uid 받아와서 DB에서 검색 => 받은 Stage와 uid에 맞는 stage 비교 => 맞는지 아닌지 판단
+# => 0413 완료
+#데이터는 json 형태로 주고 받기
+# -> 0414 완료
+#접속시 session key 확인 및 새로운 세션키 생성 후 저장
+# -> 0414 완료
