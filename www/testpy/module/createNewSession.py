@@ -11,3 +11,7 @@ def createSession(*args):
     key.update(password)
 
     return key.hexdigest()
+
+
+def nowDateTiem():
+    return str(datetime.datetime.now())

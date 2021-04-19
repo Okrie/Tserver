@@ -1,35 +1,38 @@
 import json
-from . import dbSearchinsert, createNewSession
+from . import dbSearchinsert, createNewSession, defineCode
 
 
 def userLogin(userdata):
-    isOk = False
     ret = dbSearchinsert.isInData(userdata['uid'])   #데이터 있는지 판별
-    if ret:
+    reqdata = userdata['reqdata']
+    if userdata['uid'] == -1:  # 신규유저
+        registerNewUID()
+    elif ret:   # 데이터 있으면
         reta = next(
             (item for item in dbSearchinsert.selectA('uid', userdata['uid'], 'session')
             if item['uid'] == int(userdata['uid'])), None)
-        if reta['session'] == userdata['session']:
-            loginComplete(userdata, userdata['uid'])
-            return True
+        if reta['session'] == reqdata['session']:
+            return defineCode.returnData(True, 'session', userdata, loginComplete(userdata, userdata['uid']))
+        else:
+            return defineCode.returnData(False, 'session', userdata, '')
     else:
-        return False
-
+        return 'None Data'
 
 def registerNewUID():
     newUserdata = (dbSearchinsert.lastUid().get('uid')+1,1, createNewSession.createSession('uid'))   # 마지막 uid에 1 추가, 스테이지 1
     dbSearchinsert.insert(newUserdata)
-    return 'New Registered User'
+    print('New Registered User')
 
 def loginComplete(name, uid):
-    init_key = '"' + createNewSession.createSession(name) + '"'
-    dbSearchinsert.update(uid, init_key)
-    return 'User Login Success'
+    init_key = createNewSession.createSession(name)
+    dbSearchinsert.update(uid, '"' + init_key + '"')
+    return init_key
 
-def testJsonReturn():   ##테스트 확인용
-    temp = dbSearchinsert.selectAllJson()   #Json형식으로 변경
-    temp2 = dbSearchinsert.jsonToLoad(temp)
-    temp3 = str(temp2[2]['session'])    #정보는 이런식으로 받아옴
-    print(temp2)
-    temp4 = dict(temp2[0])
-    return temp
+
+# def testJsonReturn():   ##테스트 확인용
+#     temp = dbSearchinsert.selectAllJson()   #Json형식으로 변경
+#     temp2 = dbSearchinsert.jsonToLoad(temp)
+#     temp3 = str(temp2[2]['session'])    #정보는 이런식으로 받아옴
+#     print(temp2)
+#     temp4 = dict(temp2[0])
+#     return temp

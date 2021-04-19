@@ -10,20 +10,23 @@ app = Flask(__name__)
 def hello_world():
     return 'Hello World!'
 
-@app.route('/ULManager', methods=['POST'])
+@app.route('/UserWebAPI/ULManager', methods=['POST'])
 def userloginCheck():
     userData = request.get_json()
-    if userLoginCheck.userLogin(userData):
-        return {
-            'status':'OK'
-            }
+    isdata = userLoginCheck.userLogin(userData)
+    result = json.dumps(isdata, indent=5)
+    if isdata['retmsg'] == 'SUCCESS':
+        return result
     else:
-        #userLoginCheck.registerNewUID()
-        return {
-            'status':'No'
-            }
+        return result
 
 
+####재설계를 위한 정리중####
+def apistatus():
+    userdata = request.get_json()
+    
+    if userdata['api'] == 'login':
+        print('임시')
 
 if __name__ == '__main__':
     app.run(debug=True)
