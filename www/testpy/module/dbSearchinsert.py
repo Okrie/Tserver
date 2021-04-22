@@ -23,7 +23,7 @@ def select(name, value):  #검색 조건
     row = db_class.executeAll(sql)
     return row
 
-def selectA(name, value, condition):  #특정 검색 조건
+def selectCondition(name, value, condition):  #특정 검색 조건
     db_class = connectDB.DataBase()
     sql = "SELECT " + name + "," + condition + " FROM users WHERE " + name + "=" + str(value)
     row = db_class.executeAll(sql)
@@ -36,7 +36,7 @@ def insert(newUser):    #신규 유저 추가
     db_class.commit()
     return True
 
-def insert(_userSession):   #세션
+def insertS(_userSession):   #세션
     db_class = connectDB.DataBase()
     sql = "INSERT INTO users(uid, session) VALUES " + _userSession
     db_class.execute(sql)

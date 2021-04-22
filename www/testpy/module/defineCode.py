@@ -18,7 +18,7 @@ def requestDatas(reqdata):
     return requestTEXT
 
 
-def returnData(booldata, returnname, userdata, returndata):
+def returnData(booldata, userdata, returndata):
     # return data
     API = userdata['api']
     API_VERSION = userdata['api_ver']
@@ -26,7 +26,7 @@ def returnData(booldata, returnname, userdata, returndata):
     RETDATA = returndata
     if booldata:
         RETMSG = 'SUCCESS'
-        responseTEXT = { 'api' : API, 'api_ver' : API_VERSION, 'ver' : VER, 'retmsg' : RETMSG, 'retdata' : { returnname : RETDATA}}
+        responseTEXT = { 'api' : API, 'api_ver' : API_VERSION, 'ver' : VER, 'retmsg' : RETMSG, 'retdata' : RETDATA}
     else:
         RETMSG = 'FAIL'
         responseTEXT = { 'api' : API, 'api_ver' : API_VERSION, 'ver' : VER, 'retmsg' : RETMSG, 'retdata' : {}}

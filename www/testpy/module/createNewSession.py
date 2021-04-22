@@ -1,5 +1,7 @@
 import datetime
+
 import hashlib
+from pytz import timezone
 
 def createSession(*args):
     tempKeyWord = ''
@@ -13,5 +15,12 @@ def createSession(*args):
     return key.hexdigest()
 
 
-def nowDateTiem():
-    return str(datetime.datetime.now())
+def nowDateTime(flag):
+    KST = timezone('Asia/Seoul')
+    if flag == 1:
+        return datetime.datetime.utcnow()  #UTC
+    elif flag == 2:
+        return datetime.datetime.now(KST)
+
+def get_timestamp(flag):
+    return nowDateTime(flag).timestamp()

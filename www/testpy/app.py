@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import os, sys, json
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-from module import userLoginCheck
+from module import userLoginCheck, createNewSession
 
 app = Flask(__name__)
 
@@ -12,21 +12,43 @@ def hello_world():
 
 @app.route('/UserWebAPI/ULManager', methods=['POST'])
 def userloginCheck():
-    userData = request.get_json()
-    isdata = userLoginCheck.userLogin(userData)
-    result = json.dumps(isdata, indent=5)
-    if isdata['retmsg'] == 'SUCCESS':
-        return result
-    else:
-        return result
+    try:
+        userData = request.get_json()
+        isdata = userLoginCheck.userLogin(userData)
+        result = json.dumps(isdata, indent=5)
+        if isdata['retmsg'] == 'SUCCESS':
+            return result
+        else:
+            return result
+    except:
+        userData.pop('reqdata')
+        userData.update({'retdata': '404'})
+        return userData
 
 
 ####재설계를 위한 정리중####
+@app.route('/UserWebAPI/ULManager/test', methods=['POST'])
 def apistatus():
     userdata = request.get_json()
-    
-    if userdata['api'] == 'login':
-        print('임시')
+    seperate_api = userdata['api']
+    isTarget = userLoginCheck.uidCheck(userdata)
+    if isTarget == 2:   #유저 uid 정보 없음
+        return userLoginCheck.somethingError(userdata)
+
+    if seperate_api == 'Login':         #login
+        isdata = userLoginCheck.userLogin(isTarget, userdata)
+        result = json.dumps(isdata, indent=5)
+        return result
+    elif seperate_api == 'UserData':    #유저 info
+        return ''
+    elif seperate_api == 'Time':        #utc, kst
+        time_data = userLoginCheck.returnTimes(userdata)
+        result = json.dumps(time_data, indent=5)
+        return result
+    else:
+        userdata.pop('reqdata')
+        userdata.update({'retdata': '404'})
+        return userdata
 
 if __name__ == '__main__':
     app.run(debug=True)
