@@ -12,10 +12,8 @@ PYTHON_PATH = '/home/okrie/var/www/testpy/module'
 # reqdata 부분만 받아서 처리하기    작성중
 def requestDatas(reqdata):
     # require data
-
-    requestTEXT = {}
-
-    return requestTEXT
+    data = reqdata['reqdata']
+    return data
 
 
 def returnData(booldata, userdata, returndata):

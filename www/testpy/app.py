@@ -39,12 +39,17 @@ def apistatus():
         isdata = userLoginCheck.userLogin(isTarget, userdata)
         result = json.dumps(isdata, indent=5)
         return result
+
     elif seperate_api == 'UserData':    #유저 info
-        return ''
+        infodata = userLoginCheck.showUserInfo(userdata)
+        result = json.dumps(infodata, indent=5)
+        return result
+
     elif seperate_api == 'Time':        #utc, kst
         time_data = userLoginCheck.returnTimes(userdata)
         result = json.dumps(time_data, indent=5)
         return result
+
     else:
         userdata.pop('reqdata')
         userdata.update({'retdata': '404'})
