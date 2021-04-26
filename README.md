@@ -9,7 +9,8 @@ uwsgi<br>
 uwsgi-plugin-python<br>
 python3-venv<br>
 git 2.25.1<br>
-<br><br><br>
+redis 3.5.3<br>
+<br><br><br><br>
 
 <br>
 혹여나 import 경로가 맞지 않을 시<br>
