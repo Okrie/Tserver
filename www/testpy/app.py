@@ -2,8 +2,7 @@ from flask import Flask, render_template, request
 import os, sys, json
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-from module import userLoginCheck, createNewSession
-
+from module import userLoginCheck, createNewSession, connectRedis
 app = Flask(__name__)
 
 @app.route('/')
@@ -26,34 +25,42 @@ def userloginCheck():
         return userData
 
 
-####재설계를 위한 정리중####
+####재설계를 위한 정리중####        uid, api Check => api -ing
 @app.route('/UserWebAPI/ULManager/test', methods=['POST'])
 def apistatus():
-    userdata = request.get_json()
+    try:
+        userdata = request.get_json()
+    except:
+        result = json.dumps('Unknown JSON Type', indent=5)
+        return result
     seperate_api = userdata['api']
-    isTarget = userLoginCheck.uidCheck(userdata)
-    if isTarget == 2:   #유저 uid 정보 없음
-        return userLoginCheck.somethingError(userdata)
+
+    if userdata['api']:
+        result = json.dumps(userdata, indent=5)
 
     if seperate_api == 'Login':         #login
+        isTarget = connectRedis.RedisProject.uidCheck(userdata)
+        if isTarget == 2:   #유저 uid 정보 없음
+            print('is not have uid info')
+            return userLoginCheck.somethingError(userdata)
         isdata = userLoginCheck.userLogin(isTarget, userdata)
         result = json.dumps(isdata, indent=5)
-        return result
-
     elif seperate_api == 'UserData':    #유저 info
         infodata = userLoginCheck.showUserInfo(userdata)
         result = json.dumps(infodata, indent=5)
-        return result
 
     elif seperate_api == 'Time':        #utc, kst
         time_data = userLoginCheck.returnTimes(userdata)
         result = json.dumps(time_data, indent=5)
-        return result
-
-    else:
+    elif seperate_api == 'test':
+        data = connectRedis
+        result = json.dumps(data, indent=5)
+    else:                               #ERROR
         userdata.pop('reqdata')
-        userdata.update({'retdata': '404'})
-        return userdata
+        userdata.update({'retdata': 'Request api is {} ?'.format(seperate_api)})
+        result = json.dumps(userdata, indent=5)
+
+    return result
 
 if __name__ == '__main__':
     app.run(debug=True)

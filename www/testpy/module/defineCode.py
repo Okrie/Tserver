@@ -29,3 +29,6 @@ def returnData(booldata, userdata, returndata):
         RETMSG = 'FAIL'
         responseTEXT = { 'api' : API, 'api_ver' : API_VERSION, 'ver' : VER, 'retmsg' : RETMSG, 'retdata' : {}}
     return responseTEXT
+
+def setDictionary(key, value):
+    return { key : value }

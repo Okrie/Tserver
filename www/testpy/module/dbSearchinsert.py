@@ -56,9 +56,9 @@ def insertS(_userSession):   #세션
     db_class.commit()
     return True
 
-def update(value, key):     #신규 키로 저장
+def update(name, value, key):     #신규 정보로 저장
     db_class = connectDB.DataBase()
-    sql = "UPDATE users set session = {1} WHERE uid = {0}".format(value, key)
+    sql = "UPDATE users set {0} = {2} WHERE uid = {1}".format(name, value, key)
     db_class.executeAll(sql)
     db_class.commit()
     return True

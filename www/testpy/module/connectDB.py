@@ -12,7 +12,6 @@ class DataBase():
         try:
             self.connectdb = pymysql.connect(host=hostip, user=username, password=pwd, db=ondb, charset=encodingchar, port=hostport)
             self.cursor = self.connectdb.cursor(pymysql.cursors.DictCursor)
-            #pymysql.cursors.DictCursor
         except Exception as e:
             sys.exit(e)
 
