@@ -1,3 +1,4 @@
+import json
 
 HOSTIP = '192.168.244.129'
 USERNAME = 'okrie'
@@ -9,7 +10,7 @@ HOSTPORT = 3306
 PYTHON_PATH = '/home/okrie/var/www/testpy/module'
 
 
-# reqdata 부분만 받아서 처리하기    작성중
+# reqdata data만 뽑아내기
 def requestDatas(reqdata):
     # require data
     data = reqdata['reqdata']
@@ -29,6 +30,13 @@ def returnData(booldata, userdata, returndata):
         RETMSG = 'FAIL'
         responseTEXT = { 'api' : API, 'api_ver' : API_VERSION, 'ver' : VER, 'retmsg' : RETMSG, 'retdata' : {}}
     return responseTEXT
+
+def setgetJsonType(flag, _userdata):    #flag 0 = dict to json, 1 = json to dict
+    if flag == 'set':
+        jsondata = json.dumps(_userdata)
+    elif flag == 'get':
+        jsondata = dict(json.loads(_userdata))
+    return jsondata
 
 def setDictionary(key, value):
     return { key : value }

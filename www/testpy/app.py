@@ -9,42 +9,28 @@ app = Flask(__name__)
 def hello_world():
     return 'Hello World!'
 
+# LOGIN, USERDATA, TIME API(POST)
 @app.route('/UserWebAPI/ULManager', methods=['POST'])
-def userloginCheck():
-    try:
-        userData = request.get_json()
-        isdata = userLoginCheck.userLogin(userData)
-        result = json.dumps(isdata, indent=5)
-        if isdata['retmsg'] == 'SUCCESS':
-            return result
-        else:
-            return result
-    except:
-        userData.pop('reqdata')
-        userData.update({'retdata': '404'})
-        return userData
-
-
-####재설계를 위한 정리중####        uid, api Check => api -ing
-@app.route('/UserWebAPI/ULManager/test', methods=['POST'])
 def apistatus():
     try:
+        R = connectRedis.RedisProject()
         userdata = request.get_json()
     except:
         result = json.dumps('Unknown JSON Type', indent=5)
         return result
+    
+    # Check NULL API, UID or Wrong API_VER
+    if userdata['api'] or userdata['uid'] or (userdata['api_ver'] != 1):
+        result = json.dumps(userdata, indent=5)
+        return result
+    
     seperate_api = userdata['api']
 
-    if userdata['api']:
-        result = json.dumps(userdata, indent=5)
-
+    # Seperate by API Name
     if seperate_api == 'Login':         #login
-        isTarget = connectRedis.RedisProject.uidCheck(userdata)
-        if isTarget == 2:   #유저 uid 정보 없음
-            print('is not have uid info')
-            return userLoginCheck.somethingError(userdata)
-        isdata = userLoginCheck.userLogin(isTarget, userdata)
+        isdata = userLoginCheck.userLogin(userdata)
         result = json.dumps(isdata, indent=5)
+
     elif seperate_api == 'UserData':    #유저 info
         infodata = userLoginCheck.showUserInfo(userdata)
         result = json.dumps(infodata, indent=5)
@@ -52,10 +38,11 @@ def apistatus():
     elif seperate_api == 'Time':        #utc, kst
         time_data = userLoginCheck.returnTimes(userdata)
         result = json.dumps(time_data, indent=5)
+
     elif seperate_api == 'test':
-        data = connectRedis
+        data = userdata
         result = json.dumps(data, indent=5)
-    else:                               #ERROR
+    else:                               #API ERROR
         userdata.pop('reqdata')
         userdata.update({'retdata': 'Request api is {} ?'.format(seperate_api)})
         result = json.dumps(userdata, indent=5)

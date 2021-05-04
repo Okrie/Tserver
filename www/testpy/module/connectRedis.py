@@ -11,33 +11,61 @@ REDIS_PORT = '6379'
 class RedisProject():
 
     def __init__(self):
-        self.rd = redis.StrictRedis(host=REDIS_IP, port=REDIS_PORT, db=0)
+        try:
+            self.rd = redis.StrictRedis(host=REDIS_IP, port=REDIS_PORT, db=0, charset='utf-8', decode_responses=True)
+        except Exception as e:
+            print(e)
 
-    def searchInDBdata(self, indata):  #정보 찾기
-        #strisIndata = '{0}{1}'.format('uid', userdata['uid'])
-        #isindata = self.rd.get(strisIndata)
-        #defineCode.requestDatas(userdata)
-        isBooldata = isInRedis(indata)
-        if isBooldata:
-            result = self.rd.get(indata['uid'])
-        else:
-            return indata
-
-        return result
+    def searchInDBdata(self, userdata):  #정보 찾기
+        try:
+            getData = self.rd.get(userdata['uid'])
+            result = defineCode.setgetJsonType('get', getData)
+            return result
+        except Exception as e:
+            print(e)
+            return False
+            
 
     def isInRedis(self, userdata):
-        isindata = self.rd.get(userdata['uid']) #Redis 검색
-        ret = dbSearchinsert.isInData(userdata['uid']) # db 검색
-        if isindata:
-            return True
-        elif ret:
-            return True
-        else:   ## redis에 데이터 없으면
-            return False
+        try:
+            isindata = self.rd.get(userdata['uid']) #Redis 검색
+            #print('isindata = {}'.format(isindata))
+            if self.rd.exists(userdata['uid']) == 1:
+                return True
+            else:  ## redis에 데이터 없으면
+                ret = dbSearchinsert.isInData(userdata['uid']) # db 검색
+                if ret: # redis에 넣어야함 => set
+                    dicts = dbSearchinsert.selectInfo('uid', userdata['uid'])
+                    value = next((item for item in dicts if item['uid'] == userdata['uid']), None)
+                    self.rd.set(userdata['uid'], defineCode.setgetJsonType('set', value))
+                    #print('get data = {}'.format(self.rd.get(userdata['uid'])))
+                    return True
+                return False
+        except Exception as e:
+            print(e)
 
-    
+    def updateRedis(self, userdata):
+        try:
+            dicts = dbSearchinsert.selectInfo('uid', userdata['uid'])
+            value = next((item for item in dicts if item['uid'] == userdata['uid']), None)
+            self.rd.set(userdata['uid'], defineCode.setgetJsonType('set', value))
+            print('Set Update')
+            return True
+        except Exception as e:
+            print(e)
 
-    def uidCheck(self, userdata):     # 신규유저 인지 기존 유저인지 확인
+    def setKeyandValue(self, userdata): # 0 = value, 1 = reqdata
+        reqdata = defineCode.requestDatas(userdata)
+        print(reqdata)
+        for i in reqdata:
+            self._reqdata = i #키값
+            self._req_val = reqdata[i]
+
+        self._value = '{0}{1}'.format(self._reqdata, self._req_val)
+        strRedisKeyValue = [self._value, self._reqdata]
+        return strRedisKeyValue
+
+    def uidCheck(self, userdata):     # 신규유저 인지 기존 유저인지 확인    #필요한가?
         if userdata['uid'] == -1:   # 신규유저
             return 0
         ret = self.rd.get(userdata['uid'])
