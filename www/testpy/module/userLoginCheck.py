@@ -35,7 +35,7 @@ def userLogin(userdata):
 def showUserInfo(userdata):
     try:
         ret = connectRedis.RedisProject().searchInDBdata(userdata)
-        ret.pop('session')
+        #ret.pop('session')
         print(ret)
         return defineCode.returnData(True, userdata, ret)
     except Exception as e:

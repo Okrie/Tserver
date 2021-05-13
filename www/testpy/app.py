@@ -2,52 +2,19 @@ from flask import Flask, render_template, request
 import os, sys, json
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-from module import userLoginCheck, createNewSession, connectRedis
+from module import userLoginCheck, createNewSession, connectRedis, APIcontrols
+
 app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
     return 'Hello World!'
 
-# LOGIN, USERDATA, TIME API(POST)
-@app.route('/UserWebAPI/ULManager', methods=['POST'])
-def apistatus():
-    try:
-        R = connectRedis.RedisProject()
-        userdata = request.get_json()
-    except:
-        result = json.dumps('Unknown JSON Type', indent=5)
-        return result
-    
-    # Check NULL API, UID or Wrong API_VER
-    if userdata['api'] or userdata['uid'] or (userdata['api_ver'] != 1):
-        result = json.dumps(userdata, indent=5)
-        return result
-    
-    seperate_api = userdata['api']
-
-    # Seperate by API Name
-    if seperate_api == 'Login':         #login
-        isdata = userLoginCheck.userLogin(userdata)
-        result = json.dumps(isdata, indent=5)
-
-    elif seperate_api == 'UserData':    #유저 info
-        infodata = userLoginCheck.showUserInfo(userdata)
-        result = json.dumps(infodata, indent=5)
-
-    elif seperate_api == 'Time':        #utc, kst
-        time_data = userLoginCheck.returnTimes(userdata)
-        result = json.dumps(time_data, indent=5)
-
-    elif seperate_api == 'test':
-        data = userdata
-        result = json.dumps(data, indent=5)
-    else:                               #API ERROR
-        userdata.pop('reqdata')
-        userdata.update({'retdata': 'Request api is {} ?'.format(seperate_api)})
-        result = json.dumps(userdata, indent=5)
-
-    return result
+## TEST
+@app.route('/UserWebAPIs/<api_name>', methods=['POST'])
+def get_apiname(api_name):
+    data = request.get_json()
+    return APIcontrols.APISeperate().setData(data, api_name)
 
 if __name__ == '__main__':
     app.run(debug=True)

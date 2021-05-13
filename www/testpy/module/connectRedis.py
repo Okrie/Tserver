@@ -7,7 +7,7 @@ REDIS_PORT = '6379'
 #pwd = 005605
 #database = 'testdb'
 
-####  mysql 처리와 비슷하지만 응답 받고 없으면 db요청 있으면 rtn 키값 
+####  mysql 처리와 비슷하지만 응답 받고 없으면 db요청 있으면 rtn 키값
 class RedisProject():
 
     def __init__(self):
@@ -19,7 +19,9 @@ class RedisProject():
     def searchInDBdata(self, userdata):  #정보 찾기
         try:
             getData = self.rd.get(userdata['uid'])
+            print(getData)
             result = defineCode.setgetJsonType('get', getData)
+            print(result)
             return result
         except Exception as e:
             print(e)
