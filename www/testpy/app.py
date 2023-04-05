@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import os, sys
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-#/home/okrie/var/www/testpy
+#/home/*****/var/www/testpy
 from module import connectDB
 
 
