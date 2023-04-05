@@ -1,3 +1,3 @@
 
 
-PYTHON_PATH = '/home/okrie/var/www/testpy/module'
+PYTHON_PATH = '/home/*****/var/www/testpy/module'
